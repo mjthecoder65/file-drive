@@ -3,6 +3,7 @@ services:
     build: .
     image: file-drive
     container_name: file-drive-app
+    command: python main.py
     restart: always
     volumes:
       - .:/app

@@ -4,9 +4,10 @@ from typing import Annotated
 from fastapi import APIRouter, status, Depends
 from pydantic import BaseModel, EmailStr, Field
 from auth.auth import get_current_user
+from configs.settings import settings
 from models.user import User
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/users", tags=["Users"])
 
 
 class UserResponseModel(BaseModel):
