@@ -1,9 +1,12 @@
 from datetime import datetime
+from typing import Annotated
 
-from fastapi import APIRouter, Path, UploadFile, status
+from fastapi import APIRouter, UploadFile, status, Depends
 from pydantic import BaseModel
 
 from configs.settings import settings
+from auth.auth import get_current_user
+from models.user import User
 
 router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/files", tags=["Files"])
 
@@ -16,26 +19,28 @@ class FileResponseModel(BaseModel):
 
 
 @router.post("", status_code=status.HTTP_200_OK, response_model=FileResponseModel)
-async def upload_file(file: UploadFile):
+async def upload_file(
+    file: UploadFile, user: Annotated[User, Depends(get_current_user)]
+):
     pass
 
 
 @router.get("", response_model=list[FileResponseModel])
-async def get_all_files():
+async def get_all_files(user: Annotated[User, Depends(get_current_user)]):
     """Get all files uploaded users."""
     pass
 
 
 @router.get("/{id}", response_model=FileResponseModel)
-async def get_file_by_id(id: str = Path(...)):
+async def get_file_by_id(id: str, user: Annotated[User, Depends(get_current_user)]):
     pass
 
 
 @router.get("/{id}/insights", response_model=FileResponseModel)
-async def get_file_by_id(id: str = Path(...)):
+async def get_file_by_id(id: str, user: Annotated[User, Depends(get_current_user)]):
     pass
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_file(id: str = Path(...)):
+async def delete_file(id: str, user: Annotated[User, Depends(get_current_user)]):
     pass

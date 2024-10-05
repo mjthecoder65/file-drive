@@ -10,7 +10,7 @@ class User(Base, TimeStampMixin):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True)
-    username = Column(String, unuque=True, index=True)
+    username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password_hash = Column(String, nullable=False)
     last_login_at = Column(DateTime(timezone=True), nullable=True)

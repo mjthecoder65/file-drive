@@ -1,9 +1,13 @@
 from datetime import datetime
+from typing import Annotated
 
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from configs.settings import settings
+from auth.auth import get_current_user
+from models.user import User
+
 
 router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/insights", tags=["Insights"])
 
@@ -21,21 +25,26 @@ class InsightResponseModel(BaseModel):
 
 
 @router.post("")
-async def generate_insights(payload: InsightGeneratePayloadModel):
+async def generate_insights(
+    payload: InsightGeneratePayloadModel,
+    user: Annotated[User, Depends(get_current_user)],
+):
     raise NotImplementedError("This feature is not implemented yet.")
 
 
 @router.get("/{id}", response_model=list[InsightResponseModel])
-async def get_insights(id: str = Path(...)):
+async def get_insights(id: str, user: Annotated[User, Depends(get_current_user)]):
     raise NotImplementedError("This feature is not implemented yet.")
 
 
 @router.get("/{id}/download", response_model=list[InsightResponseModel])
-async def download_insight(id: str = Path(...)):
+async def download_insight(id: str, user: Annotated[User, Depends(get_current_user)]):
     """Allows you to download insight as a file. PDF, DOCX, TXT, etc."""
     raise NotImplementedError("This feature is not implemented yet.")
 
 
 @router.delete("/{id}")
-async def delete_insights(file_id: str = Path(...)):
+async def delete_insights(
+    file_id: str, user: Annotated[User, Depends(get_current_user)]
+):
     raise NotImplementedError("This feature is not implemented yet.")

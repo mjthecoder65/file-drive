@@ -1,7 +1,10 @@
 from datetime import datetime
+from typing import Annotated
 
-from fastapi import APIRouter, Path, status
+from fastapi import APIRouter, status, Depends
 from pydantic import BaseModel, EmailStr, Field
+from auth.auth import get_current_user
+from models.user import User
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -14,17 +17,17 @@ class UserResponseModel(BaseModel):
 
 
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponseModel)
-async def get_logged_in_user():
+async def get_logged_in_user(user: Annotated[User, Depends(get_current_user)]):
     pass
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=UserResponseModel)
-async def get_user_by_id(id: str = Path(...)):
+async def get_user_by_id(id: str, user: Annotated[User, Depends(get_current_user)]):
     pass
 
 
 @router.get("/{id}/files", status_code=status.HTTP_200_OK)
-async def get_user_files(id: str = Path(...)):
+async def get_user_files(id: str, user: Annotated[User, Depends(get_current_user)]):
     pass
 
 
@@ -33,7 +36,9 @@ async def get_user_files(id: str = Path(...)):
     status_code=status.HTTP_200_OK,
     response_model=UserResponseModel,
 )
-async def change_user_password(id: str = Path(...)):
+async def change_user_password(
+    id: str, user: Annotated[User, Depends(get_current_user)]
+):
     pass
 
 
@@ -45,6 +50,7 @@ class ChangeUserPasswordModel(BaseModel):
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_account(
     payload: ChangeUserPasswordModel,
-    id: str = Path(...),
+    id: str,
+    user: Annotated[User, Depends(get_current_user)],
 ):
     pass
