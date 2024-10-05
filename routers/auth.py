@@ -1,9 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from typing import Annotated
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
 
 from configs.settings import settings
+from sqlalchemy.ext.asyncio import AsyncSession
+from configs.database import get_session
 
-router = APIRouter(prefix=f"/{settings.API_ENDPOINT_PREFIX}/auth", tags=["Auth"])
+router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/auth", tags=["Auth"])
 
 
 class RegisterPayloadModel(BaseModel):
@@ -23,5 +27,8 @@ async def register_user(payload: RegisterPayloadModel):
 
 
 @router.post("/login")
-async def login(payload: LoginModel):
+async def login(
+    db: Annotated[AsyncSession, Depends(get_session)],
+    form: OAuth2PasswordRequestForm = Depends(),
+):
     pass
