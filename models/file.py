@@ -1,6 +1,5 @@
 from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 
 from configs.database import Base
 from models.mixins import TimeStampMixin
@@ -19,4 +18,3 @@ class File(Base, TimeStampMixin):
         ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
-    user = relationship("User", back_populates="files")
