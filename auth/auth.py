@@ -1,4 +1,5 @@
-from datetime import datetime
+import uuid
+from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -13,12 +14,13 @@ from services.user import UserService
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 2
 
 
-def create_access_token(id: str, is_admin: bool = False):
+def create_access_token(id: uuid.UUID, is_admin: bool = False):
     return jwt.encode(
         claims={
-            "sub": id,
+            "sub": str(id),
             "is_admin": is_admin,
-            "exp": datetime.now() + settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES,
+            "exp": datetime.now()
+            + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
         },
         key=settings.JWT_SECRET_KEY,
     )
