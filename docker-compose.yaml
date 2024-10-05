@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    image: file-drive
+    container_name: file-drive-app
+    restart: always
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    env_file: .env
+    
+  file_drive_db:
+    image: postgres:15.8-bullseye
+    container_name: file-drive-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - file-drive-data:/var/lib/postgresql/data
+    ports:
+      - "5030:5432"
+
+volumes:
+  file-drive-data:
