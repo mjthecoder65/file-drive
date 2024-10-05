@@ -1,32 +1,13 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import FastAPI
 
 from configs.settings import settings
-from configs.database import engine, Base
 from routers import auth, files, insights, users
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-            yield
-    finally:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-
 
 app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.debug,
-    lifespan=lifespan,
     docs_url="/",
-    description="""Backend API for File Drive that 
-    allows users to upload and manager files.
-    Service also user generative AI to enable user to issue prompt to generate insights from the uploaded files.""",
 )
 
 app.include_router(auth.router)
