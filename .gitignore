@@ -111,3 +111,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+
+# Alembic migration files
+migration/versions/
