@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, EmailStr, Field
+
 from auth.auth import get_current_user
 from configs.settings import settings
 from models.user import User
