@@ -11,10 +11,19 @@ class UserService:
         self.user_repo = UserRepository(db)
 
     async def register(self, username: str, email: str, password: str) -> User:
-        user = User(
-            email=email, user_name=username, password_hash=get_password_hash(password)
+        user = await self.user_repo.get_by_email(email)
+
+        if user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists",
+            )
+
+        new_user = User(
+            email=email, username=username, password_hash=get_password_hash(password)
         )
-        return await self.user_repo.add(user)
+
+        return await self.user_repo.add(new_user)
 
     async def authenticate(self, email: str, password: str) -> User:
         user = await self.user_repo.get_by_email(email)
