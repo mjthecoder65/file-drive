@@ -1,3 +1,5 @@
+import pytz
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,7 +27,7 @@ class UserService:
 
         return await self.user_repo.add(new_user)
 
-    async def authenticate(self, email: str, password: str) -> User:
+    async def login(self, email: str, password: str) -> User:
         user = await self.user_repo.get_by_email(email)
         if not user:
             raise HTTPException(
@@ -36,6 +38,7 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Wrong email or password"
             )
+        user.last_login_at = datetime.now(pytz.utc)
         return user
 
     async def get_by_id(self, user_id: str) -> User:

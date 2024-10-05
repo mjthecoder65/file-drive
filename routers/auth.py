@@ -44,4 +44,10 @@ async def login(
     db: Annotated[AsyncSession, Depends(get_session)],
     form: OAuth2PasswordRequestForm = Depends(),
 ):
-    pass
+    user_service = UserService(db)
+    user = await user_service.login(email=form.username, password=form.password)
+
+    return {
+        "access_token": create_access_token(user.id, user.is_admin),
+        "token_type": "bearer",
+    }
