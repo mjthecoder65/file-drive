@@ -40,6 +40,7 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Wrong email or password"
             )
         user.last_login_at = datetime.now(pytz.utc)
+        return await self.user_repo.update(user)
         return user
 
     async def get_by_id(self, user_id: str) -> User:
