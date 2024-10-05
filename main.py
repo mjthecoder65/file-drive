@@ -4,15 +4,19 @@ import uvicorn
 from fastapi import FastAPI
 
 from configs.settings import settings
+from configs.database import engine, Base
 from routers import auth, files, insights, users
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        yield
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            yield
     finally:
-        pass
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
 
 
 app = FastAPI(
