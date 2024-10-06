@@ -17,11 +17,17 @@ class UserRepository:
         result = await self.db.execute(select(self.model).filter_by(id=id))
         return result.scalars().first()
 
+    async def get_all(self) -> list[User]:
+        result = await self.db.execute(select(self.model))
+        return result.scalars().all()
+
     async def add(self, user: User) -> User:
         self.db.add(user)
         await self.db.commit()
+        await self.db.refresh(user)
         return user
 
     async def update(self, user: User) -> User:
         await self.db.commit()
+        await self.db.refresh(user)
         return user
