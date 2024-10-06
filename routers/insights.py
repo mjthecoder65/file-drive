@@ -1,12 +1,16 @@
+import uuid
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.auth import get_current_user
+from configs.database import get_session
 from configs.settings import settings
 from models.user import User
+from services.insight import InsightService
 
 router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/insights", tags=["Insights"])
 
@@ -26,24 +30,30 @@ class InsightResponseModel(BaseModel):
 @router.post("")
 async def generate_insights(
     payload: InsightGeneratePayloadModel,
-    user: Annotated[User, Depends(get_current_user)],
+    _: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_session)],
 ):
-    raise NotImplementedError("This feature is not implemented yet.")
+    insight_service = InsightService(db)
+    return await insight_service.generate_insight(
+        prompt=payload.prompt, file_id=payload.file_id
+    )
 
 
-@router.get("/{id}", response_model=list[InsightResponseModel])
-async def get_insights(id: str, user: Annotated[User, Depends(get_current_user)]):
-    raise NotImplementedError("This feature is not implemented yet.")
+@router.get("/{id}")
+async def get_insight(
+    id: uuid.UUID,
+    _: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_session)],
+):
+    insight_service = InsightService(db)
+    return await insight_service.get_insight_by_id(insight_id=id)
 
 
-@router.get("/{id}/download", response_model=list[InsightResponseModel])
-async def download_insight(id: str, user: Annotated[User, Depends(get_current_user)]):
-    """Allows you to download insight as a file. PDF, DOCX, TXT, etc."""
-    raise NotImplementedError("This feature is not implemented yet.")
-
-
-@router.delete("/{id}")
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_insights(
-    file_id: str, user: Annotated[User, Depends(get_current_user)]
+    file_id: uuid.UUID,
+    _: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_session)],
 ):
-    raise NotImplementedError("This feature is not implemented yet.")
+    insight_service = InsightService(db)
+    return await insight_service.delete_insight_by_id(insight_id=file_id)
