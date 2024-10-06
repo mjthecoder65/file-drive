@@ -117,3 +117,4 @@ Thumbs.db
 migration/versions/
 
 playground.py
+key.json
