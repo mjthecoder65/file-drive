@@ -1,4 +1,4 @@
-import uuid
+from datetime import timedelta
 
 from fastapi import HTTPException, UploadFile, status
 from google.cloud import storage
@@ -19,20 +19,91 @@ class FileService:
         client = storage.Client()
         bucket = client.bucket(bucket_name=self.bucket_name)
         blob = bucket.blob(file_name)
-        blob.upload_from_file(file.file)
+        blob.upload_from_file(file.file, content_type=file.content_type)
 
-    async def upload_file(self, user_id: str, file_name: str, file: UploadFile) -> File:
-        file_id = str(uuid.uuid4())
-        self._upload_to_gcs(file_name, file)
-        new_file = File(file_id=file_id, name=file_name, user_id=user_id)
-        return await self.file_repo.add(new_file)
+    def __generate_signed_url(
+        self, file_name: str, expiration: int = 2 * 60 * 60
+    ) -> str:
+        client = storage.Client()
+        bucket = client.bucket(bucket_name=self.bucket_name)
+        blob = bucket.blob(file_name)
+        expiration = timedelta(seconds=expiration)
+        return blob.generate_signed_url(
+            expiration=expiration, response_disposition="inline"
+        )
+
+    async def upload_file(self, user_id: str, file: UploadFile) -> File:
+        file_name = f"{user_id}-{file.filename}"
+        self._upload_to_gcs(file_name=file_name, file=file)
+
+        file.file.seek(0)
+        content = await file.read()
+        file_size = len(content)
+        extension = file.filename.split(".")[-1]
+        mime_type = file.content_type
+
+        new_file = File(
+            name=file_name,
+            user_id=user_id,
+            extension=extension,
+            mime_type=mime_type,
+            size=file_size,
+        )
+
+        url = self.__generate_signed_url(file_name)
+        result = await self.file_repo.add(new_file)
+
+        return {
+            "id": result.id,
+            "name": result.name,
+            "extension": result.extension,
+            "mime_type": result.mime_type,
+            "size": result.size,
+            "url": url,
+            "created_at": result.created_at,
+            "updated_at": result.updated_at,
+        }
 
     async def get_files_by_user_id(self, user_id: str) -> list[File]:
-        file = await self.file_repo.get_by_user_id(user_id)
-        if not file:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        files = await self.file_repo.get_by_user_id(user_id)
+        result = []
+
+        for file in files:
+            url = self.__generate_signed_url(file.name)
+            result.append(
+                {
+                    "id": file.id,
+                    "name": file.name,
+                    "extension": file.extension,
+                    "mime_type": file.mime_type,
+                    "size": file.size,
+                    "url": url,
+                    "created_at": file.created_at,
+                    "updated_at": file.updated_at,
+                }
             )
+        return result
+
+    async def get_all_files(self) -> list[File]:
+        files = await self.file_repo.get_all()
+        result = []
+
+        for file in files:
+            url = self.__generate_signed_url(file.name)
+
+            result.append(
+                {
+                    "id": file.id,
+                    "name": file.name,
+                    "extension": file.extension,
+                    "mime_type": file.mime_type,
+                    "size": file.size,
+                    "url": url,
+                    "created_at": file.created_at,
+                    "updated_at": file.updated_at,
+                }
+            )
+        return result
 
     async def delete_file_by_id(self, file_id: str):
         file = await self.file_repo.get_by_id(file_id)
@@ -46,4 +117,23 @@ class FileService:
         bucket = client.bucket(bucket_name=self.bucket_name)
         blob = bucket.blob(file.name)
         blob.delete()
-        return await self.file_repo.delete(id=file.id)
+
+        await self.file_repo.delete(file=file)
+
+    async def get_file_by_id(self, file_id: str) -> File:
+        file = await self.file_repo.get_by_id(file_id)
+        if not file:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+            )
+        url = self.__generate_signed_url(file.name)
+        return {
+            "id": file.id,
+            "name": file.name,
+            "extension": file.extension,
+            "mime_type": file.mime_type,
+            "size": file.size,
+            "url": url,
+            "created_at": file.created_at,
+            "updated_at": file.updated_at,
+        }
