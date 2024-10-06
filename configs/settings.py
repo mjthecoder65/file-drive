@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     GCS_BUCKET_NAME: str
     GOOGLE_CLOUD_PROJECT: str
     GEMINI_API_KEY: str
+    GEMINI_MODEL_NAME: str = "gemini-pro-vision"
+    LOCATION: str = "asia-northeast3"
 
     @property
     def debug(self) -> bool:
