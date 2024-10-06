@@ -67,7 +67,7 @@ Follow these steps to set up the project locally.
 - Python 3.11+
 - Docker
 - PostgreSQL
-- Google Cloud account (for cloud storage and Vertex API access)
+- Google Cloud account (for Cloud Run, Cloud storage and Vertex API access)
 
 ### **Installation**
 
