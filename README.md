@@ -1,10 +1,10 @@
-# file-drive#
+# **File-drive**
 
 _A cloud-based file management application with integrated insights using Vertex API Gemini Pro Vision._
 
 ## **Overview**
 
-**File-drive** is a powerful file management backend service built using FastAPI. It allows users to securely store, organize, and manage their files in cloud storage. In addition to basic file operations like uploading, downloading, and deleting, InsightVault provides insightful file analysis using the Vertex API Gemini Pro Vision, offering valuable insights on file content.
+**File-drive** is a powerful file management backend service built using FastAPI. It allows users to securely store, organize, and manage their files in cloud storage. In addition to basic file operations like uploading, downloading, and deleting, File-drive provides insightful file analysis using the Vertex API Gemini Pro Vision, offering valuable insights on file content.
 
 ### **Key Features:**
 
@@ -74,6 +74,6 @@ Follow these steps to set up the project locally.
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/your-username/insightvault.git
-cd insightvault
+https://github.com/mjthecoder65/file-drive.git
+cd file-drive
 ```
