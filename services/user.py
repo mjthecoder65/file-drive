@@ -41,7 +41,6 @@ class UserService:
             )
         user.last_login_at = datetime.now(pytz.utc)
         return await self.user_repo.update(user)
-        return user
 
     async def get_by_id(self, user_id: str) -> User:
         user = await self.user_repo.get_by_id(user_id)
@@ -51,3 +50,18 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
         return user
+
+    async def get_all(self) -> list[User]:
+        return await self.user_repo.get_all()
+
+    async def change_password(
+        self, user: User, old_password: str, new_password: str
+    ) -> User:
+        if not verify_password(old_password, user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Old password is incorrect",
+            )
+
+        user.password_hash = get_password_hash(new_password)
+        return await self.user_repo.update(user)
