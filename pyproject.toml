@@ -23,6 +23,7 @@ gunicorn = "^23.0.0"
 asyncpg = "^0.29.0"
 alembic = "^1.13.3"
 pytz = "^2024.2"
+google-cloud-aiplatform = "^1.69.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
