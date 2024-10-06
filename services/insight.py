@@ -1,13 +1,13 @@
-import vertexai
+import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from vertexai.preview.generative_models import GenerativeModel, Part
 
 from configs.settings import settings
+from models.insight import Insight
 from repositories.file import FileRepository
 from repositories.insight import InsightRepository
-
-GEMINI_MODEL_NAME = "gemini-1.5-flash-002"
+from services.gemini import GeminiService
 
 
 class InsightService:
@@ -16,6 +16,7 @@ class InsightService:
         self.db = db
         self.bucket_name = settings.GCS_BUCKET_NAME
         self.file_repo = FileRepository(db)
+        self.gemini_service = GeminiService()
 
     async def generate_insight(self, prompt, file_id: str):
         file = await self.file_repo.get_by_id(file_id)
@@ -23,19 +24,16 @@ class InsightService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
             )
-        vertexai.init(project=settings.GOOGLE_CLOUD_PROJECT, location="asia-northeast3")
-        model = GenerativeModel(GEMINI_MODEL_NAME)
+        result = self.gemini_service.get_gemini_response(prompt, file)
 
-        file = Part.from_uri(file.url, mime_type=file.mime_type)
-        content = [
-            prompt,
-            file,
-        ]
+        await self.insight_repo.add(
+            insight_data=result,
+            prompt=prompt,
+            user_id=file.user_id,
+            file_id=file_id,
+        )
 
-        response = model.generate_content(content)
-        await self.save_insight(response.text, prompt, file.user_id, file_id)
-
-        return response.text
+        return result
 
     async def save_insight(
         self, insight_data: str, prompt: str, user_id: str, file_id: str
@@ -58,3 +56,19 @@ class InsightService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Insights not found"
             )
         return insights
+
+    async def get_insight_by_id(self, insight_id: uuid.UUID):
+        insight = await self.insight_repo.get_by_id(insight_id)
+        if not insight:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Insight not found"
+            )
+        return insight
+
+    async def delete_insight_by_id(self, insight_id: uuid.UUID):
+        insight = await self.insight_repo.get_by_id(insight_id)
+        if not insight:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Insight not found"
+            )
+        await self.insight_repo.delete(insight)
