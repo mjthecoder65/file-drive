@@ -1,16 +1,4 @@
 services:
-  app:
-    build: .
-    image: file-drive
-    container_name: file-drive-app
-    command: python main.py
-    restart: always
-    volumes:
-      - .:/app
-    ports:
-      - "8080:8080"
-    env_file: .env
-    
   file_drive_db:
     image: postgres:15.8-bullseye
     container_name: file-drive-db
