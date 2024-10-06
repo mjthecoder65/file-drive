@@ -10,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.auth import get_current_user, only_admin_user
 from configs.database import get_session
 from configs.settings import settings
-from models import insight
 from models.user import User
 from services.file import FileService
 from services.insight import InsightService
