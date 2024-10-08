@@ -11,8 +11,6 @@ from configs.settings import settings
 from models.user import User
 from services.user import UserService
 
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 2
-
 
 def create_access_token(id: uuid.UUID, is_admin: bool = False):
     return jwt.encode(
