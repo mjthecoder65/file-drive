@@ -14,9 +14,15 @@ class FileRepository:
         await self.db.refresh(file)
         return file
 
-    async def get_by_user_id(self, user_id: str) -> list[File]:
+    async def get_by_user_id(
+        self, user_id: str, limit: int = 20, offset: int = 0
+    ) -> list[File]:
         result = await self.db.execute(
-            select(File).filter_by(user_id=user_id).order_by(File.created_at.desc())
+            select(File)
+            .filter_by(user_id=user_id)
+            .limit(limit)
+            .offset(offset)
+            .order_by(File.created_at.desc())
         )
         return result.scalars().all()
 
@@ -32,8 +38,11 @@ class FileRepository:
         result = await self.db.execute(select(File))
         return result.scalars().all()
 
-    async def get_file_count(self) -> int:
-        result = await self.db.execute(select(File))
+    async def get_file_count(self, user_id: int | None = None) -> int:
+        query = select(File)
+        if user_id:
+            query = query.filter_by(user_id=user_id)
+        result = await self.db.execute(query)
         return result.scalars().count()
 
     async def delete(self, file: File):
