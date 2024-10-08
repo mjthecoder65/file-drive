@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, UploadFile, status
+from fastapi import APIRouter, Depends, UploadFile, status, Query
 from pydantic import BaseModel, HttpUrl
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,10 +22,17 @@ class FileResponseModel(BaseModel):
     name: str
     extension: str
     mime_type: str
-    url: HttpUrl  # Signed URL
+    url: HttpUrl
     size: Decimal
     created_at: datetime
     updated_at: datetime
+
+
+class PaginatedFileResponseModel(BaseModel):
+    files: list[FileResponseModel]
+    total: int
+    limit: int
+    offset: int
 
 
 @router.post("", status_code=status.HTTP_200_OK, response_model=FileResponseModel)
@@ -39,11 +46,25 @@ async def upload_file(
 
 
 @router.get(
-    "", dependencies=[Depends(only_admin_user)], response_model=list[FileResponseModel]
+    "",
+    dependencies=[Depends(only_admin_user)],
+    response_model=PaginatedFileResponseModel,
 )
-async def get_all_files(db: Annotated[AsyncSession, Depends(get_session)]):
+async def get_all_files(
+    db: Annotated[AsyncSession, Depends(get_session)],
+    limit: int = Query(default=10, ge=1, le=20),
+    offset: int = Query(default=0, ge=0),
+):
     file_service = FileService(db)
-    return await file_service.get_all_files()
+    files = await file_service.get_all_files(limit=limit, offset=offset)
+    count = await file_service.get_files_count()
+
+    return {
+        "files": files,
+        "total": count,
+        "limit": limit,
+        "offset": offset,
+    }
 
 
 @router.get(
