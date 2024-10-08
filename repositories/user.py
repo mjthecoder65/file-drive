@@ -17,8 +17,8 @@ class UserRepository:
         result = await self.db.execute(select(self.model).filter_by(id=id))
         return result.scalars().first()
 
-    async def get_all(self) -> list[User]:
-        result = await self.db.execute(select(self.model))
+    async def get_all(self, limit: int, offset: int) -> list[User]:
+        result = await self.db.execute(select(self.model).limit(limit).offset(offset))
         return result.scalars().all()
 
     async def add(self, user: User) -> User:
