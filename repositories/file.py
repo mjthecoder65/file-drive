@@ -32,6 +32,10 @@ class FileRepository:
         result = await self.db.execute(select(File))
         return result.scalars().all()
 
+    async def get_file_count(self) -> int:
+        result = await self.db.execute(select(File))
+        return result.scalars().count()
+
     async def delete(self, file: File):
         self.db.delete(file)
         await self.db.commit()
