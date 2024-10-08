@@ -1,28 +1,20 @@
 import uuid
-from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr, Field
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.auth import get_current_user, only_admin_user
 from configs.database import get_session
 from configs.settings import settings
+from models import file
 from models.user import User
+from schemas.user import UserResponseModel, ChangeUserPasswordModel
+from schemas.file import PaginatedFileResponseModel
 from services.file import FileService
 from services.user import UserService
 
 router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/users", tags=["Users"])
-
-
-class UserResponseModel(BaseModel):
-    id: uuid.UUID
-    email: EmailStr
-    username: str = Field(..., min_length=6, max_length=50)
-    created_at: datetime
-    updated_at: datetime
-    last_login_at: datetime
 
 
 @router.get(
@@ -31,10 +23,21 @@ class UserResponseModel(BaseModel):
     status_code=status.HTTP_200_OK,
     response_model=list[UserResponseModel],
 )
-async def get_all_users(db: Annotated[AsyncSession, Depends(get_session)]):
-    # TODO: Implement pagination.
+async def get_all_users(
+    db: Annotated[AsyncSession, Depends(get_session)],
+    limit: int = Query(default=10, ge=1, le=50),
+    offset: int = Query(default=0, ge=0),
+):
     user_service = UserService(db)
-    return await user_service.get_all()
+    count = await user_service.get_users_count()
+    users = await user_service.get_all(limit=limit, offset=offset)
+
+    return {
+        "users": users,
+        "total": count,
+        "limit": limit,
+        "offset": offset,
+    }
 
 
 @router.get(
@@ -55,23 +58,33 @@ async def get_user_by_id(
     return await user_service.get_by_id(id)
 
 
-@router.get("/{id}/files", status_code=status.HTTP_200_OK)
+@router.get(
+    "/{id}/files",
+    status_code=status.HTTP_200_OK,
+    response_model=PaginatedFileResponseModel,
+)
 async def get_user_files(
     id: uuid.UUID,
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_session)],
+    limit: int = Query(default=10, ge=1, le=20),
+    offset: int = Query(default=0, ge=0),
 ):
-    # TODO: Implement pagination.
     if user.id != id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     file_service = FileService(db)
-    return await file_service.get_files_by_user_id(user.id)
+    files = await file_service.get_files_bfy_user_id(
+        user.id, limit=limit, offset=offset
+    )
+    count = await file_service.get_files_count_by_user_id(user.id)
 
-
-class ChangeUserPasswordModel(BaseModel):
-    old_password: str = Field(..., min_length=8, max_length=1024)
-    new_password: str = Field(..., min_length=8, max_length=1024)
+    return {
+        "files": files,
+        "total": count,
+        "limit": limit,
+        "offset": offset,
+    }
 
 
 @router.put(

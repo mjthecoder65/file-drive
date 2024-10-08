@@ -1,30 +1,17 @@
 import uuid
-from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
-from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.auth import get_current_user
 from configs.database import get_session
 from configs.settings import settings
 from models.user import User
+from schemas.insight import InsightGeneratePayloadModel
 from services.insight import InsightService
 
 router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/insights", tags=["Insights"])
-
-
-class InsightGeneratePayloadModel(BaseModel):
-    prompt: str = Field(..., min_length=10, max_length=1024)
-    file_id: str
-
-
-class InsightResponseModel(BaseModel):
-    prompt: str
-    response: str
-    created_at: datetime
-    updated_at: datetime
 
 
 @router.post("")

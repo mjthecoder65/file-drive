@@ -1,38 +1,18 @@
 import uuid
-from datetime import datetime
-from decimal import Decimal
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, UploadFile, status, Query
-from pydantic import BaseModel, HttpUrl
+from fastapi import APIRouter, Depends, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.auth import get_current_user, only_admin_user
 from configs.database import get_session
 from configs.settings import settings
 from models.user import User
+from schemas.file import FileResponseModel, PaginatedFileResponseModel
 from services.file import FileService
 from services.insight import InsightService
 
 router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/files", tags=["Files"])
-
-
-class FileResponseModel(BaseModel):
-    id: uuid.UUID
-    name: str
-    extension: str
-    mime_type: str
-    url: HttpUrl
-    size: Decimal
-    created_at: datetime
-    updated_at: datetime
-
-
-class PaginatedFileResponseModel(BaseModel):
-    files: list[FileResponseModel]
-    total: int
-    limit: int
-    offset: int
 
 
 @router.post("", status_code=status.HTTP_200_OK, response_model=FileResponseModel)

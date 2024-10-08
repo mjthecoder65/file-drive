@@ -64,8 +64,10 @@ class FileService:
             "updated_at": result.updated_at,
         }
 
-    async def get_files_by_user_id(self, user_id: str) -> list[File]:
-        files = await self.file_repo.get_by_user_id(user_id)
+    async def get_files_by_user_id(
+        self, user_id: str, limit: int, offest: int
+    ) -> list[File]:
+        files = await self.file_repo.get_by_user_id(user_id, limit=limit, offset=offest)
         result = []
 
         for file in files:
@@ -83,6 +85,9 @@ class FileService:
                 }
             )
         return result
+
+    async def get_files_count_by_user_id(self, user_id: str) -> int:
+        return await self.file_repo.get_file_count(user_id=user_id)
 
     async def get_all_files(self) -> list[File]:
         files = await self.file_repo.get_all()
