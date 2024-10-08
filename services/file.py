@@ -90,7 +90,6 @@ class FileService:
 
         for file in files:
             url = self.__generate_signed_url(file.name)
-
             result.append(
                 {
                     "id": file.id,
@@ -104,6 +103,9 @@ class FileService:
                 }
             )
         return result
+
+    async def get_files_count(self) -> int:
+        return await self.file_repo.get_file_count()
 
     async def delete_file_by_id(self, file_id: str):
         file = await self.file_repo.get_by_id(file_id)
