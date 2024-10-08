@@ -12,7 +12,7 @@ from models.user import User
 from services.user import UserService
 
 
-def create_access_token(id: uuid.UUID, is_admin: bool = False):
+def create_access_token(id: uuid.UUID, is_admin: bool = False) -> str:
     return jwt.encode(
         claims={
             "sub": str(id),
