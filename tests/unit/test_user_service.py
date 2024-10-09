@@ -1,13 +1,14 @@
 import pytest
 import uuid
 from faker import Faker
+from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from fastapi import HTTPException
 from services.user import UserService
 
 
 @pytest.fixture(scope="function", autouse=True)
-def user_service(db):
+def user_service(db: AsyncSession):
     return UserService(db)
 
 
@@ -27,7 +28,7 @@ def get_random_user():
 
 
 @pytest.mark.asyncio
-async def test_register_user(user_service):
+async def test_register_user(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
@@ -39,7 +40,7 @@ async def test_register_user(user_service):
 
 
 @pytest.mark.asyncio
-async def test_create_user_duplicate_email(user_service):
+async def test_create_user_duplicate_email(user_service: UserService):
     new_user = get_random_user()
     user = await user_service.register(
         username=new_user.username, email=new_user.email, password=new_user.password
@@ -57,7 +58,7 @@ async def test_create_user_duplicate_email(user_service):
 
 
 @pytest.mark.asyncio
-async def test_login_user(user_service):
+async def test_login_user(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
@@ -74,7 +75,7 @@ async def test_login_user(user_service):
 
 
 @pytest.mark.asyncio
-async def test_login_user_wrong_email(user_service):
+async def test_login_user_wrong_email(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
@@ -91,7 +92,7 @@ async def test_login_user_wrong_email(user_service):
 
 
 @pytest.mark.asyncio
-async def test_login_user_wrong_password(user_service):
+async def test_login_user_wrong_password(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
@@ -108,7 +109,7 @@ async def test_login_user_wrong_password(user_service):
 
 
 @pytest.mark.asyncio
-async def test_get_user(user_service):
+async def test_get_user(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
@@ -125,7 +126,7 @@ async def test_get_user(user_service):
 
 
 @pytest.mark.asyncio
-async def test_get_user_not_found(user_service):
+async def test_get_user_not_found(user_service: UserService):
 
     new_user = get_random_user()
 
@@ -141,7 +142,7 @@ async def test_get_user_not_found(user_service):
 
 
 @pytest.mark.asyncio
-async def test_get_all_users(user_service):
+async def test_get_all_users(user_service: UserService):
 
     new_user = get_random_user()
 
@@ -160,7 +161,7 @@ async def test_get_all_users(user_service):
 
 
 @pytest.mark.asyncio
-async def test_change_password(user_service):
+async def test_change_password(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
@@ -183,7 +184,7 @@ async def test_change_password(user_service):
 
 
 @pytest.mark.asyncio
-async def test_change_password_wrong_password(user_service):
+async def test_change_password_wrong_password(user_service: UserService):
     new_user = get_random_user()
 
     user = await user_service.register(
