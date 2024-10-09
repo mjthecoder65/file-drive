@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 2
     JWT_SECRET_KEY: str
     DATABASE_URL: str
-    DATABASE_URL_TEST: str = "sqlite+aiosqlite:///:memory:"
+    DATABASE_URL_TEST: str = "sqlite+aiosqlite:///./test.db"
     GCS_BUCKET_NAME: str
     GOOGLE_CLOUD_PROJECT: str
     GEMINI_MODEL_NAME: str = "gemini-pro-vision"
