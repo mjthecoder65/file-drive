@@ -3,7 +3,6 @@ from datetime import timedelta
 from fastapi import HTTPException, UploadFile, status
 from google.cloud import storage
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from configs.settings import settings
 from models.file import File
 from repositories.file import FileRepository
@@ -12,12 +11,10 @@ from repositories.file import FileRepository
 class FileService:
     def __init__(self, db: AsyncSession):
         self.file_repo = FileRepository(db)
-        self.db = db
-        self.bucket_name = settings.GCS_BUCKET_NAME
 
     def _upload_to_gcs(self, file_name: str, file: UploadFile):
         client = storage.Client()
-        bucket = client.bucket(bucket_name=self.bucket_name)
+        bucket = client.bucket(bucket_name=settings.GCS_BUCKET_NAME)
         blob = bucket.blob(file_name)
         blob.upload_from_file(file.file, content_type=file.content_type)
 
@@ -25,7 +22,7 @@ class FileService:
         self, file_name: str, expiration: int = 2 * 60 * 60
     ) -> str:
         client = storage.Client()
-        bucket = client.bucket(bucket_name=self.bucket_name)
+        bucket = client.bucket(bucket_name=settings.GCS_BUCKET_NAME)
         blob = bucket.blob(file_name)
         expiration = timedelta(seconds=expiration)
         return blob.generate_signed_url(
