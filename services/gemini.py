@@ -4,7 +4,9 @@ from vertexai.preview.generative_models import GenerativeModel, Part
 from configs.settings import settings
 from models.file import File
 
-vertexai.init(project=settings.GOOGLE_CLOUD_PROJECT, location=settings.LOCATION)
+vertexai.init(
+    project=settings.GOOGLE_CLOUD_PROJECT, location=settings.GOOGLE_CLOUD_REGION
+)
 
 
 class GeminiService:
