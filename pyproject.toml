@@ -24,10 +24,17 @@ asyncpg = "^0.29.0"
 alembic = "^1.13.3"
 pytz = "^2024.2"
 google-cloud-aiplatform = "^1.69.0"
+bcrypt = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
+faker = "^30.3.0"
+pytest-cov = "^5.0.0"
+pytest-asyncio = "^0.24.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[pytest]
+addopts = ["--cov=app", "--cov-report=term-missing", "--cov-report=html"]
