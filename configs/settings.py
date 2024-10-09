@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
     DATABASE_URL: PostgresDsn
+    DATABASE_URL_TEST: str = "sqlite+aiosqlite:///./test.db"
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 2
