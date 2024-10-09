@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from configs.settings import settings
 from configs.database import Base
 
-engine = create_async_engine(settings.DATABASE_URL_TEST, echo=True)
+engine = create_async_engine(settings.DATABASE_URL, echo=True)
 
 AsyncSessionLocal = sessionmaker(
     bind=engine, class_=AsyncSession, expire_on_commit=False
