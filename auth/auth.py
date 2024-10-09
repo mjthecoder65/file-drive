@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -12,16 +12,17 @@ from models.user import User
 from services.user import UserService
 
 
-def create_access_token(id: uuid.UUID, is_admin: bool = False) -> str:
+def create_access_token(
+    id: uuid.UUID, is_admin: bool, expires_datetime: datetime
+) -> str:
     return jwt.encode(
-        claims={
-            "sub": str(id),
-            "is_admin": is_admin,
-            "exp": datetime.now()
-            + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
-        },
+        claims={"sub": str(id), "is_admin": is_admin, "exp": expires_datetime},
         key=settings.JWT_SECRET_KEY,
     )
+
+
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(token, settings.JWT_SECRET_KEY)
 
 
 async def get_current_user(
@@ -31,7 +32,7 @@ async def get_current_user(
     db: AsyncSession = Depends(get_session),
 ) -> User:
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY)
+        payload = decode_access_token(token)
         user_id: str = payload.get("sub")
 
         if user_id is None:
