@@ -50,7 +50,7 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://admin:y7jHf&DNWG15@localhost:5030/main
           JWT_SECRET_KEY: pD/jHobTwG7Tw2YtV9RLs577JEUCWcgJEDVm7RejznQ=
           JWT_ALGORITHM: HS256
-          GCS_BUCKET_NAME: file-drive-uploads-vegax-429008-test
+          GCS_BUCKET_NAME: file-drive-uploads-vegax-429008
           GOOGLE_CLOUD_PROJECT: file-drive-vegax-429008
           GOOGLE_CLOUD_REGION: asia-northeast3
   build:
