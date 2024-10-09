@@ -4,7 +4,6 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from configs.settings import settings
-from models.insight import Insight
 from repositories.file import FileRepository
 from repositories.insight import InsightRepository
 from services.gemini import GeminiService
