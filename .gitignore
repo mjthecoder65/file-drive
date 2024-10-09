@@ -118,3 +118,5 @@ migration/versions/
 
 playground.py
 key.json
+
+test.db
