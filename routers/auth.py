@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -27,7 +28,9 @@ async def register_user(
     )
 
     return {
-        "access_token": create_access_token(user.id, user.is_admin),
+        "access_token": create_access_token(
+            user.id, user.is_admin, datetime.now() + timedelta(hours=2)
+        ),
         "token_type": "bearer",
     }
 
@@ -41,6 +44,8 @@ async def login(
     user = await user_service.login(email=form.username, password=form.password)
 
     return {
-        "access_token": create_access_token(user.id, user.is_admin),
+        "access_token": create_access_token(
+            user.id, user.is_admin, datetime.now() + timedelta(hours=2)
+        ),
         "token_type": "bearer",
     }
