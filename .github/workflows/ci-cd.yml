@@ -66,5 +66,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/file-drive-repo/filedrive:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/file-drive-repo/filedrive:latest
+          docker build -t mjthecoder10/file-drive-repo/filedrive:latest .
+          docker push mjthecoder10/file-drive-repo/filedrive:latest
