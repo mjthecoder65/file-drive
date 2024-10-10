@@ -1,29 +1,11 @@
-import random
-
 import pytest
 from faker import Faker
 from fastapi import status
 from httpx import AsyncClient
-from pydantic import BaseModel
-
 from configs.settings import settings
+from tests.common import get_random_user
 
 faker = Faker()
-
-
-class UserIn(BaseModel):
-    username: str
-    email: str
-    password: str
-
-
-def get_random_user():
-    faker = Faker()
-    username = faker.user_name()
-    email = faker.email()
-    password = faker.password(length=random.randint(8, 256))
-
-    return UserIn(username=username, email=email, password=password)
 
 
 @pytest.mark.integration

@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timedelta
 
-import pytest
 from faker import Faker
 
 from auth.auth import create_access_token, decode_access_token

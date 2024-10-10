@@ -3,8 +3,8 @@ import uuid
 import pytest
 from faker import Faker
 from fastapi import HTTPException
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from tests.common import get_random_user
 
 from services.user import UserService
 
@@ -12,21 +12,6 @@ from services.user import UserService
 @pytest.fixture(scope="function", autouse=True)
 def user_service(db: AsyncSession):
     return UserService(db)
-
-
-class UserIn(BaseModel):
-    username: str
-    email: str
-    password: str
-
-
-def get_random_user():
-    faker = Faker()
-    username = faker.user_name()
-    email = faker.email()
-    password = faker.password()
-
-    return UserIn(username=username, email=email, password=password)
 
 
 async def test_register_user(user_service: UserService):
