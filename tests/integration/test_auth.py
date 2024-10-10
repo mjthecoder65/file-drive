@@ -1,6 +1,7 @@
+import random
+
 import pytest
 from faker import Faker
-import random
 from fastapi import status
 from httpx import AsyncClient
 from pydantic import BaseModel
@@ -43,7 +44,6 @@ def get_random_user():
 
 @pytest.mark.integration
 class TestAuth:
-    @pytest.mark.anyio
     async def test_register(self, client: AsyncClient):
         new_user = get_random_user()
         payload = {

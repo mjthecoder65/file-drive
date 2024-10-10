@@ -29,7 +29,6 @@ def get_random_user():
     return UserIn(username=username, email=email, password=password)
 
 
-@pytest.mark.asyncio
 async def test_register_user(user_service: UserService):
     new_user = get_random_user()
 
@@ -41,7 +40,6 @@ async def test_register_user(user_service: UserService):
     assert user.email == new_user.email
 
 
-@pytest.mark.asyncio
 async def test_create_user_duplicate_email(user_service: UserService):
     new_user = get_random_user()
     user = await user_service.register(
@@ -59,7 +57,6 @@ async def test_create_user_duplicate_email(user_service: UserService):
         )
 
 
-@pytest.mark.asyncio
 async def test_login_user(user_service: UserService):
     new_user = get_random_user()
 
@@ -76,7 +73,6 @@ async def test_login_user(user_service: UserService):
     assert user.email == new_user.email
 
 
-@pytest.mark.asyncio
 async def test_login_user_wrong_email(user_service: UserService):
     new_user = get_random_user()
 
@@ -93,7 +89,6 @@ async def test_login_user_wrong_email(user_service: UserService):
         await user_service.login(email=faker.email(), password=new_user.password)
 
 
-@pytest.mark.asyncio
 async def test_login_user_wrong_password(user_service: UserService):
     new_user = get_random_user()
 
@@ -110,7 +105,6 @@ async def test_login_user_wrong_password(user_service: UserService):
         await user_service.login(email=new_user.email, password=faker.password())
 
 
-@pytest.mark.asyncio
 async def test_get_user(user_service: UserService):
     new_user = get_random_user()
 
@@ -127,7 +121,6 @@ async def test_get_user(user_service: UserService):
     assert user.email == new_user.email
 
 
-@pytest.mark.asyncio
 async def test_get_user_not_found(user_service: UserService):
 
     new_user = get_random_user()
@@ -143,7 +136,6 @@ async def test_get_user_not_found(user_service: UserService):
         await user_service.get_by_id(uuid.uuid4())
 
 
-@pytest.mark.asyncio
 async def test_get_all_users(user_service: UserService):
 
     new_user = get_random_user()
@@ -162,7 +154,6 @@ async def test_get_all_users(user_service: UserService):
     assert users[0].email == new_user.email
 
 
-@pytest.mark.asyncio
 async def test_change_password(user_service: UserService):
     new_user = get_random_user()
 
@@ -185,7 +176,6 @@ async def test_change_password(user_service: UserService):
     assert user.password_hash != new_password
 
 
-@pytest.mark.asyncio
 async def test_change_password_wrong_password(user_service: UserService):
     new_user = get_random_user()
 

@@ -1,7 +1,7 @@
 import uuid
-import pytest
 from datetime import datetime, timedelta
 
+import pytest
 from faker import Faker
 
 from auth.auth import create_access_token, decode_access_token
@@ -9,7 +9,6 @@ from auth.auth import create_access_token, decode_access_token
 faker = Faker()
 
 
-@pytest.mark.unit
 def test_create_access_token_no_expiration():
     is_admin = faker.boolean()
     access_token = create_access_token(
