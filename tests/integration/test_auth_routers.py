@@ -2,6 +2,7 @@ import pytest
 from faker import Faker
 from fastapi import status
 from httpx import AsyncClient
+
 from configs.settings import settings
 from tests.common import get_random_user
 

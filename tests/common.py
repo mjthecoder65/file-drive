@@ -1,5 +1,5 @@
-from pydantic import BaseModel
 from faker import Faker
+from pydantic import BaseModel
 
 
 class UserIn(BaseModel):

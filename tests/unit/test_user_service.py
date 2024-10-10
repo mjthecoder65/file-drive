@@ -4,9 +4,9 @@ import pytest
 from faker import Faker
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.common import get_random_user
 
 from services.user import UserService
+from tests.common import get_random_user
 
 
 @pytest.fixture(scope="function", autouse=True)
