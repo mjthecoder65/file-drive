@@ -1,5 +1,6 @@
 import pytest
 from faker import Faker
+import random
 from fastapi import status
 from httpx import AsyncClient
 from pydantic import BaseModel
@@ -33,9 +34,9 @@ class UserIn(BaseModel):
 
 def get_random_user():
     faker = Faker()
-    username = faker.user_name()  # specify length of username.
+    username = faker.user_name()
     email = faker.email()
-    password = faker.password(length=10)
+    password = faker.password(length=random.randint(8, 256))
 
     return UserIn(username=username, email=email, password=password)
 
