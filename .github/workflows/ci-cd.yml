@@ -30,7 +30,7 @@ jobs:
           poetry install --no-root
 
       - name: Run tests
-        run: poetry run pytest --disable-warnings --cov=.
+        run: poetry run pytest
         env:
           PYTHONPATH: .
           DATABASE_URL: postgresql+asyncpg://admin:y7jHf&DNWG15@localhost:5030/main
