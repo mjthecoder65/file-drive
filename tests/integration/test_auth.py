@@ -5,27 +5,10 @@ from faker import Faker
 from fastapi import status
 from httpx import AsyncClient
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
 
-from configs.database import get_session
 from configs.settings import settings
-from main import app
 
 faker = Faker()
-engine = create_async_engine(settings.DATABASE_URL_TEST, echo=True)
-
-AsyncSessionLocal = sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
-)
-
-
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
-
-
-app.dependency_overrides[get_session] = get_db
 
 
 class UserIn(BaseModel):
