@@ -41,7 +41,7 @@ async def get_current_user(
             )
 
         user_service = UserService(db)
-        user = await user_service.get_by_id(user_id)
+        user = await user_service.get_by_id(uuid.UUID(user_id))
         return user
     except ExpiredSignatureError:
         raise HTTPException(
