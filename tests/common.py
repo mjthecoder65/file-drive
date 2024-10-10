@@ -1,5 +1,6 @@
-from faker import Faker
 from random import randint
+
+from faker import Faker
 from pydantic import BaseModel
 
 
