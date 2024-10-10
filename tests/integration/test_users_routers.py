@@ -2,7 +2,6 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from auth.auth import create_access_token
 from configs.settings import settings
 from tests.common import get_random_user
 
