@@ -32,12 +32,13 @@ class UserService:
         user = await self.user_repo.get_by_email(email)
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Wrong email or password",
             )
         if not verify_password(password, user.password_hash):
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Wrong email or password"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Wrong email or password",
             )
         user.last_login_at = datetime.now(pytz.utc)
         return await self.user_repo.update(user)
