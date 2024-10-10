@@ -1,9 +1,12 @@
 import random
+
 import pytest
-from security.password import get_password_hash, verify_password
 from faker import Faker
 
+from security.password import get_password_hash, verify_password
 
+
+@pytest.mark.unit
 def test_password_raise_error():
     with pytest.raises(ValueError, match="Password must be a string or bytes"):
         password = random.randint(1, 10000)
@@ -14,6 +17,7 @@ def test_password_raise_error():
         verify_password(password, password)
 
 
+@pytest.mark.unit
 def test_get_password_hash():
     faker = Faker()
     password = faker.password()

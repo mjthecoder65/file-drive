@@ -1,9 +1,11 @@
-import pytest
 import uuid
+
+import pytest
 from faker import Faker
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
 from fastapi import HTTPException
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.user import UserService
 
 

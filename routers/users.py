@@ -9,8 +9,8 @@ from configs.database import get_session
 from configs.settings import settings
 from models import file
 from models.user import User
-from schemas.user import UserResponseModel, ChangeUserPasswordModel
 from schemas.file import PaginatedFileResponseModel
+from schemas.user import ChangeUserPasswordModel, UserResponseModel
 from services.file import FileService
 from services.user import UserService
 
