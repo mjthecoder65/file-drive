@@ -33,9 +33,9 @@ class UserIn(BaseModel):
 
 def get_random_user():
     faker = Faker()
-    username = faker.user_name()
+    username = faker.username()  # specify length of username.
     email = faker.email()
-    password = faker.password()
+    password = faker.password(length=10)
 
     return UserIn(username=username, email=email, password=password)
 
