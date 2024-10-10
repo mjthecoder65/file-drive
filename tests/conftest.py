@@ -9,7 +9,7 @@ from configs.database import Base, get_session
 from configs.settings import settings
 from main import app
 
-engine = create_async_engine(settings.DATABASE_URL_TEST, echo=True)
+engine = create_async_engine(settings.DATABASE_URL_TEST, echo=False)
 
 AsyncSessionLocal = sessionmaker(
     bind=engine, class_=AsyncSession, expire_on_commit=False
