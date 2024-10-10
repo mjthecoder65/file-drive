@@ -21,5 +21,5 @@ class PaginatedUserResponseModel(BaseModel):
 
 
 class ChangeUserPasswordModel(BaseModel):
-    old_password: str = Field(..., min_length=8, max_length=1024)
-    new_password: str = Field(..., min_length=8, max_length=1024)
+    old_password: str = Field(..., min_length=8, max_length=256)
+    new_password: str = Field(..., min_length=8, max_length=256)
