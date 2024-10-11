@@ -31,3 +31,7 @@ class UserRepository:
         await self.db.commit()
         await self.db.refresh(user)
         return user
+
+    async def get_count(self) -> int:
+        result = await self.db.execute(select(self.model))
+        return len(result.scalars().all())
