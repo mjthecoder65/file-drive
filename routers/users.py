@@ -10,7 +10,11 @@ from configs.settings import settings
 from models import file
 from models.user import User
 from schemas.file import PaginatedFileResponseModel
-from schemas.user import ChangeUserPasswordModel, UserResponseModel
+from schemas.user import (
+    ChangeUserPasswordModel,
+    UserResponseModel,
+    PaginatedUserResponseModel,
+)
 from services.file import FileService
 from services.user import UserService
 
@@ -21,7 +25,7 @@ router = APIRouter(prefix=f"{settings.API_ENDPOINT_PREFIX}/users", tags=["Users"
     "",
     dependencies=[Depends(only_admin_user)],
     status_code=status.HTTP_200_OK,
-    response_model=list[UserResponseModel],
+    response_model=PaginatedUserResponseModel,
 )
 async def get_all_users(
     db: Annotated[AsyncSession, Depends(get_session)],
@@ -29,11 +33,11 @@ async def get_all_users(
     offset: int = Query(default=0, ge=0),
 ):
     user_service = UserService(db)
-    count = await user_service.get_users_count()
+    count = await user_service.get_count()
     users = await user_service.get_all(limit=limit, offset=offset)
 
     return {
-        "users": users,
+        "data": users,
         "total": count,
         "limit": limit,
         "offset": offset,
