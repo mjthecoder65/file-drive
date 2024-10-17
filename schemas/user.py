@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field
+from schemas.pagination import PaginationBaseModel
 
 
 class UserResponseModel(BaseModel):
@@ -10,14 +11,14 @@ class UserResponseModel(BaseModel):
     username: str = Field(..., min_length=6, max_length=50)
     created_at: datetime
     updated_at: datetime
-    last_login_at: datetime
+    last_login_at: datetime | None = None
+
+    class Config:
+        from_attribues = True
 
 
-class PaginatedUserResponseModel(BaseModel):
-    users: list[UserResponseModel]
-    total: int
-    limit: int
-    offset: int
+class PaginatedUserResponseModel(PaginationBaseModel):
+    data: list[UserResponseModel]
 
 
 class ChangeUserPasswordModel(BaseModel):
