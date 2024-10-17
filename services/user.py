@@ -55,6 +55,9 @@ class UserService:
     async def get_all(self, limit: int, offset: int) -> list[User]:
         return await self.user_repo.get_all(limit=limit, offset=offset)
 
+    async def get_count(self) -> int:
+        return await self.user_repo.get_count()
+
     async def change_password(
         self, user: User, old_password: str, new_password: str
     ) -> User:
