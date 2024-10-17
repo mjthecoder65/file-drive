@@ -34,6 +34,10 @@ class TestUserRouters:
             headers={"Authorization": f"Bearer {access_token}"},
         )
 
+        assert res.status_code == status.HTTP_200_OK
+        assert res.json()["username"] == new_user.username
+        assert res.json()["email"] == new_user.email
+
     async def test_get_me_unauthorized(self, client: AsyncClient):
         res = await client.get(f"{settings.API_ENDPOINT_PREFIX}/users/me")
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
