@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, HttpUrl
+from schemas.pagination import PaginationBaseModel
 
 
 class FileResponseModel(BaseModel):
@@ -16,8 +17,5 @@ class FileResponseModel(BaseModel):
     updated_at: datetime
 
 
-class PaginatedFileResponseModel(BaseModel):
-    files: list[FileResponseModel]
-    total: int
-    limit: int
-    offset: int
+class PaginatedFileResponseModel(PaginationBaseModel):
+    data: list[FileResponseModel]
