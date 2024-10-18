@@ -13,7 +13,9 @@ class UserService:
     def __init__(self, db: AsyncSession):
         self.user_repo = UserRepository(db)
 
-    async def register(self, username: str, email: str, password: str) -> User:
+    async def register(
+        self, username: str, email: str, password: str, is_admin: bool = False
+    ) -> User:
         user = await self.user_repo.get_by_email(email)
 
         if user:
@@ -23,7 +25,10 @@ class UserService:
             )
 
         new_user = User(
-            email=email, username=username, password_hash=get_password_hash(password)
+            email=email,
+            username=username,
+            password_hash=get_password_hash(password),
+            is_admin=is_admin,
         )
 
         return await self.user_repo.add(new_user)
