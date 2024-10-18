@@ -1,8 +1,10 @@
 import uuid
-from datetime import datetime, timedelta
+import pytest
+from datetime import datetime, timedelta, timezone
 
 from faker import Faker
 
+from jose import jwt, ExpiredSignatureError
 from auth.auth import create_access_token, decode_access_token
 
 faker = Faker()
@@ -13,7 +15,7 @@ def test_create_access_token_no_expiration():
     access_token = create_access_token(
         uuid.uuid4(),
         is_admin=is_admin,
-        expires_datetime=datetime.now() + timedelta(hours=2),
+        expires_datetime=datetime.now(tz=timezone.utc) + timedelta(hours=2),
     )
     assert access_token is not None
     assert isinstance(access_token, str)
@@ -24,3 +26,18 @@ def test_create_access_token_no_expiration():
     assert payload is not None
     assert isinstance(payload, dict)
     assert payload["is_admin"] == is_admin
+
+
+def test_create_access_token_with_expiration():
+    is_admin = faker.boolean()
+    access_token = create_access_token(
+        uuid.uuid4(),
+        is_admin=is_admin,
+        expires_datetime=datetime.now(tz=timezone.utc) - timedelta(hours=2),
+    )
+
+    assert access_token is not None
+    assert isinstance(access_token, str)
+
+    with pytest.raises(ExpiredSignatureError):
+        decode_access_token(access_token)

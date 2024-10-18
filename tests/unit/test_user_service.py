@@ -3,15 +3,9 @@ import uuid
 import pytest
 from faker import Faker
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.user import UserService
 from tests.common import get_random_user
-
-
-@pytest.fixture(scope="function", autouse=True)
-def user_service(db: AsyncSession):
-    return UserService(db)
 
 
 async def test_register_user(user_service: UserService):
