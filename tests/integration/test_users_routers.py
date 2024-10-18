@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi import status
 from httpx import AsyncClient
 
 from configs.settings import settings
+from auth.auth import create_access_token
+from services.user import UserService
 from tests.common import get_random_user
 
 
@@ -44,5 +47,23 @@ class TestUserRouters:
         res = await client.get(f"{settings.API_ENDPOINT_PREFIX}/users/me")
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_get_me_invalid_token(self, client: AsyncClient):
-        pass
+    async def test_get_me_with_expired_token(
+        self, client: AsyncClient, user_service: UserService
+    ):
+        new_user = get_random_user()
+        user = await user_service.register(
+            username=new_user.username, email=new_user.email, password=new_user.password
+        )
+
+        access_token = create_access_token(
+            user.id,
+            is_admin=user.is_admin,
+            expires_datetime=datetime.now(tz=timezone.utc) - timedelta(hours=1),
+        )
+
+        res = await client.get(
+            f"{settings.API_ENDPOINT_PREFIX}/users/me",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
