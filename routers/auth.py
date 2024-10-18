@@ -29,7 +29,9 @@ async def register_user(
 
     return {
         "access_token": create_access_token(
-            user.id, user.is_admin, datetime.now() + timedelta(hours=2)
+            id=user.id,
+            is_admin=user.is_admin,
+            expires_datetime=datetime.now() + timedelta(hours=2),
         ),
         "token_type": "bearer",
     }
@@ -45,7 +47,9 @@ async def login(
 
     return {
         "access_token": create_access_token(
-            user.id, user.is_admin, datetime.now() + timedelta(hours=2)
+            id=user.id,
+            is_admin=user.is_admin,
+            expires_datetime=datetime.now() + timedelta(hours=2),
         ),
         "token_type": "bearer",
     }

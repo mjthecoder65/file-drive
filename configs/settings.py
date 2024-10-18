@@ -1,10 +1,17 @@
+from enum import Enum
+
 from pydantic_settings import BaseSettings
+
+
+class Environment(str, Enum):
+    PROD = "production"
+    DEV = "development"
 
 
 class Settings(BaseSettings):
     APP_VERSION: str = "v1"
     API_ENDPOINT_PREFIX: str = "/api/v1"
-    APP_ENV: str = "development"
+    APP_ENV: str = Environment.DEV
     APP_NAME: str = "FileDrive API"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 2

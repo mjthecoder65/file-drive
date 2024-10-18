@@ -19,6 +19,7 @@ class TestUserRouters:
         res = await client.post(
             f"{settings.API_ENDPOINT_PREFIX}/auth/register", json=payload
         )
+
         assert res.status_code == status.HTTP_201_CREATED
 
         res = await client.post(
@@ -26,8 +27,9 @@ class TestUserRouters:
             data={"username": new_user.email, "password": new_user.password},
         )
         assert res.status_code == status.HTTP_200_OK
-
         access_token = res.json()["access_token"]
+        assert access_token is not None
+        assert type(access_token) == str
 
         res = await client.get(
             f"{settings.API_ENDPOINT_PREFIX}/users/me",

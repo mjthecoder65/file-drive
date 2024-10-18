@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: file-drive
+  labes:
+    app: file-drive-app-api
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: file-drive-api
+  template:
+    metadata:
+      labels:
+        app: file-drive-api
+    spec:
+      containers:
+        - name: file-drive
+          image: file-drive:latest
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+            timeoutSeconds: 1
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-drive-api # Name of the service
+  labels:
+    app: file-drive-api # Label to select the service
+spec:
+  selector:
+    app: file-drive-app-api # Select all pods with the label app: file-drive-api
+  ports:
+    - protocal: TCP
+      port: 8080
+      targetPort: 8000
+  type: LoadBalancer # Expose the service to the internet

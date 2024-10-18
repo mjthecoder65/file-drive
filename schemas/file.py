@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, HttpUrl
+
 from schemas.pagination import PaginationBaseModel
 
 

@@ -10,11 +10,8 @@ from configs.settings import settings
 from models import file
 from models.user import User
 from schemas.file import PaginatedFileResponseModel
-from schemas.user import (
-    ChangeUserPasswordModel,
-    UserResponseModel,
-    PaginatedUserResponseModel,
-)
+from schemas.user import (ChangeUserPasswordModel, PaginatedUserResponseModel,
+                          UserResponseModel)
 from services.file import FileService
 from services.user import UserService
 
@@ -46,11 +43,10 @@ async def get_all_users(
 
 @router.get(
     "/me",
-    dependencies=[Depends(only_admin_user)],
     status_code=status.HTTP_200_OK,
     response_model=UserResponseModel,
 )
-async def get_logged_in_user(user: Annotated[User, Depends(get_current_user)]):
+async def get_current_in_user(user: Annotated[User, Depends(get_current_user)]):
     return user
 
 
