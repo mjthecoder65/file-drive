@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from configs.database import Base, get_session
 from configs.settings import settings
+from services.user import UserService
 from main import app
 
 engine = create_async_engine(settings.DATABASE_URL_TEST, echo=False)
@@ -46,3 +47,8 @@ async def get_session():
 async def db():
     async with get_session() as session:
         yield session
+
+
+@pytest.fixture(scope="function", autouse=True)
+def user_service(db: AsyncSession):
+    return UserService(db)
