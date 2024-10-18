@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
@@ -31,7 +31,7 @@ async def register_user(
         "access_token": create_access_token(
             id=user.id,
             is_admin=user.is_admin,
-            expires_datetime=datetime.now() + timedelta(hours=2),
+            expires_datetime=datetime.now(tz=timezone.utc) + timedelta(hours=2),
         ),
         "token_type": "bearer",
     }
@@ -49,7 +49,7 @@ async def login(
         "access_token": create_access_token(
             id=user.id,
             is_admin=user.is_admin,
-            expires_datetime=datetime.now() + timedelta(hours=2),
+            expires_datetime=datetime.now(tz=timezone.utc) + timedelta(hours=2),
         ),
         "token_type": "bearer",
     }
