@@ -1,13 +1,8 @@
 from random import randint
 
 from faker import Faker
-from pydantic import BaseModel
 
-
-class UserIn(BaseModel):
-    username: str
-    email: str
-    password: str
+from schemas.user import UserIn
 
 
 def get_random_user():

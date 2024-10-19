@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta, timezone
+
 import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from configs.settings import settings
 from auth.auth import create_access_token
+from configs.settings import settings
 from services.user import UserService
 from tests.common import get_random_user
 
@@ -67,3 +68,47 @@ class TestUserRouters:
         )
 
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_get_all_users(self, client: AsyncClient, user_service: UserService):
+
+        for _ in range(10):
+            new_user = get_random_user()
+            payload = {
+                "username": new_user.username,
+                "email": new_user.email,
+                "password": new_user.password,
+            }
+
+            res = await client.post(
+                f"{settings.API_ENDPOINT_PREFIX}/auth/register", json=payload
+            )
+            assert res.status_code == status.HTTP_201_CREATED
+
+        new_user = get_random_user()
+        admin_user = await user_service.register(
+            username=new_user.username,
+            email=new_user.email,
+            password=new_user.password,
+            is_admin=True,
+        )
+
+        access_token = create_access_token(
+            id=admin_user.id,
+            is_admin=admin_user.is_admin,
+            expires_datetime=datetime.now(tz=timezone.utc) + timedelta(hours=2),
+        )
+
+        params = {"limit": 5, "offset": 0}
+
+        res = await client.get(
+            f"{settings.API_ENDPOINT_PREFIX}/users",
+            headers={"Authorization": f"Bearer {access_token}"},
+            params=params,
+        )
+
+        assert res.status_code == status.HTTP_200_OK
+        payload = res.json()
+        assert payload["total"] == 11
+        assert len(payload["data"]) == 5
+        assert payload["limit"] == 5
+        assert payload["offset"] == 0

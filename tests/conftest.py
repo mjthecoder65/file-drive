@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 
 from configs.database import Base, get_session
 from configs.settings import settings
-from services.user import UserService
 from main import app
+from services.user import UserService
 
 engine = create_async_engine(settings.DATABASE_URL_TEST, echo=False)
 
