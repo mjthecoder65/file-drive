@@ -112,3 +112,31 @@ class TestUserRouters:
         assert len(payload["data"]) == 5
         assert payload["limit"] == 5
         assert payload["offset"] == 0
+
+    async def test_get_all_users_unauthorized(self, client: AsyncClient):
+        res = await client.get(f"{settings.API_ENDPOINT_PREFIX}/users")
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_get_all_users_not_admin(self, client: AsyncClient):
+        new_user = get_random_user()
+        res = await client.post(
+            f"{settings.API_ENDPOINT_PREFIX}/auth/register",
+            json={
+                "username": new_user.username,
+                "email": new_user.email,
+                "password": new_user.password,
+            },
+        )
+
+        assert res.status_code == status.HTTP_201_CREATED
+        assert res.json()["access_token"] is not None
+        assert res.json()["token_type"] == "bearer"
+
+        access_token = res.json()["access_token"]
+
+        res = await client.get(
+            f"{settings.API_ENDPOINT_PREFIX}/users",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        assert res.status_code == status.HTTP_403_FORBIDDEN
