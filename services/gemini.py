@@ -12,10 +12,15 @@ vertexai.init(
 class GeminiService:
     def __init__(
         self,
+        temperature: float = 0.5,
+        max_output_tokens: int = 2048,
     ):
         self.model = GenerativeModel(model_name=settings.GEMINI_MODEL_NAME)
         self.stream = True
-        self.generation_config = {"temperature": 0.3, "max_output_tokens": 2048}
+        self.generation_config = {
+            "temperature": temperature,
+            "max_output_tokens": max_output_tokens,
+        }
 
     def get_gemini_response(self, prompt: str, file: File) -> list[str]:
         file_uri = (
