@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from faker import Faker
-from jose import ExpiredSignatureError, jwt
+from jose import ExpiredSignatureError
 
 from auth.auth import create_access_token, decode_access_token
 
