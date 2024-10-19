@@ -52,5 +52,5 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker login -u mjthecoder10 -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker login -u mjthecoder10 -p ${{ secrets.DOCKER_HUB_TOKEN }} && \
           docker push mjthecoder10/file-drive-repo/file-drive:latest
