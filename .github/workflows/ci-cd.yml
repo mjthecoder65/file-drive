@@ -48,9 +48,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t mjthecoder10/file-drive-repo/file-drive:latest .
+        run: docker build -t mjthecoder10/file-drive:latest .
 
       - name: Push Docker image
         run: |
           docker login -u mjthecoder10 -p ${{ secrets.DOCKER_HUB_TOKEN }} && \
-          docker push mjthecoder10/file-drive-repo/file-drive:latest
+          docker push mjthecoder10/file-drive:latest
