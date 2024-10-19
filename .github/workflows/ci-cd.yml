@@ -50,7 +50,11 @@ jobs:
       - name: Build Docker image
         run: docker build -t mjthecoder10/file-drive:latest .
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: mjthecoder10
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
       - name: Push Docker image
-        run: |
-          docker login -u mjthecoder10 -p ${{ secrets.DOCKER_HUB_TOKEN }} && \
-          docker push mjthecoder10/file-drive:latest
+        run: docker push mjthecoder10/file-drive:latest
