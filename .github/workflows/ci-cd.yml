@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for File Drive
 
 on:
   push:
@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
@@ -33,9 +33,28 @@ jobs:
         run: poetry run pytest
         env:
           PYTHONPATH: .
-          DATABASE_URL: postgresql+asyncpg://admin:y7jHf&DNWG15@localhost:5030/main
-          JWT_SECRET_KEY: pD/jHobTwG7Tw2YtV9RLs577JEUCWcgJEDVm7RejznQ=
-          JWT_ALGORITHM: HS256
-          GCS_BUCKET_NAME: file-drive-uploads-vegax-429008
-          GOOGLE_CLOUD_PROJECT: file-drive-vegax-429008
-          GOOGLE_CLOUD_REGION: asia-northeast3
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
+          GCS_BUCKET_NAME: ${{ vars.GCS_BUCKET_NAME }}
+          GOOGLE_CLOUD_PROJECT: ${{ vars.GOOGLE_CLOUD_PROJECT}}
+          GOOGLE_CLOUD_REGION: ${{ vars.GOOGLE_CLOUD_REGION}}
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t mjthecoder10/file-drive:latest .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: mjthecoder10
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Push Docker image
+        run: docker push mjthecoder10/file-drive:latest
