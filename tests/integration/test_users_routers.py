@@ -2,7 +2,6 @@ import random
 import uuid
 from datetime import datetime, timedelta, timezone
 from unittest import mock
-from unittest.mock import AsyncMock
 
 import pytest
 from faker import Faker
@@ -26,12 +25,6 @@ async def admin_user(user_service: UserService) -> User:
         password=new_user.password,
         is_admin=True,
     )
-
-
-@pytest.fixture(scope="function")
-def mock_file_service():
-    mock_file_service = AsyncMock(spec=FileService)
-    return mock_file_service
 
 
 @pytest.mark.integration
@@ -93,9 +86,7 @@ class TestUserRouters:
 
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_get_all_users(
-        self, client: AsyncClient, user_service: UserService, admin_user: User
-    ):
+    async def test_get_all_users(self, client: AsyncClient, admin_user: User):
 
         for _ in range(10):
             new_user = get_random_user()
@@ -159,7 +150,7 @@ class TestUserRouters:
 
         assert res.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_get_user_files(self, client: AsyncClient, mock_file_service):
+    async def test_get_user_files(self, client: AsyncClient):
         new_user = get_random_user()
         payload = {
             "username": new_user.username,
@@ -176,31 +167,41 @@ class TestUserRouters:
         access_token = res.json()["access_token"]
         user_id = decode_access_token(access_token)["sub"]
 
-        mock_file_service.get_files_by_user_id.return_value = [
-            {
-                "id": str(uuid.uuid4()),
-                "name": "test_file",
-                "extension": "txt",
-                "mime_type": "text/plain",
-                "size": 1024,
-                "url": "http://test.com",
-                "created_at": datetime.now(tz=timezone.utc),
-                "updated_at": datetime.now(tz=timezone.utc),
-            }
-        ]
+        faker = Faker()
 
-        mock_file_service.get_files_count_by_user_id.return_value = 1
+        for _ in range(20):
+            file_name = faker.name() + ".txt"
+            message = faker.text(max_nb_chars=200)
+            file = {"file": (file_name, message.encode("utf-8"), "text/plain")}
 
-        with mock.patch(
-            "routers.users.FileService", return_value=mock_file_service
-        ) as mock_file_service:
+            fake_signed_url = faker.url(schemes=["https"])
+            with mock.patch.object(
+                FileService, "_upload_to_gcs", return_value=None
+            ) as _upload_to_gcs, mock.patch.object(
+                FileService, "_generate_signed_url", return_value=fake_signed_url
+            ) as _generate_signed_url:
+                res = await client.post(
+                    f"{settings.API_ENDPOINT_PREFIX}/files",
+                    files=file,
+                    headers={"Authorization": f"Bearer {access_token}"},
+                )
+                assert res.status_code == status.HTTP_200_OK
+                assert _upload_to_gcs.called
+                assert _generate_signed_url.called
+
+        with mock.patch.object(
+            FileService, "_generate_signed_url", return_value=fake_signed_url
+        ) as _generate_signed_url:
+            params = {"limit": 10, "offset": 0}
             res = await client.get(
                 f"{settings.API_ENDPOINT_PREFIX}/users/{user_id}/files",
                 headers={"Authorization": f"Bearer {access_token}"},
+                params=params,
             )
-
             assert res.status_code == status.HTTP_200_OK
-            assert len(res.json()["data"]) == 1
+            assert _generate_signed_url.called
+            assert len(res.json()["data"]) == params["limit"]
+            assert res.json()["total"] == 20
 
     async def test_get_user_by_id(self, client: AsyncClient, admin_user: User):
         new_user = get_random_user()
