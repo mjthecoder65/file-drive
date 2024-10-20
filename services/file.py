@@ -19,7 +19,7 @@ class FileService:
         blob = bucket.blob(file_name)
         blob.upload_from_file(file.file, content_type=file.content_type)
 
-    def __generate_signed_url(
+    def _generate_signed_url(
         self, file_name: str, expiration: int = 2 * 60 * 60
     ) -> str:
         client = storage.Client()
@@ -48,7 +48,7 @@ class FileService:
             size=file_size,
         )
 
-        url = self.__generate_signed_url(file_name)
+        url = self._generate_signed_url(file_name)
         result = await self.file_repo.add(new_file)
 
         return {
@@ -69,7 +69,7 @@ class FileService:
         result = []
 
         for file in files:
-            url = self.__generate_signed_url(file.name)
+            url = self._generate_signed_url(file.name)
             result.append(
                 {
                     "id": file.id,
@@ -92,7 +92,7 @@ class FileService:
         result = []
 
         for file in files:
-            url = self.__generate_signed_url(file.name)
+            url = self._generate_signed_url(file.name)
             result.append(
                 {
                     "id": file.id,
@@ -131,7 +131,7 @@ class FileService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
             )
-        url = self.__generate_signed_url(file.name)
+        url = self._generate_signed_url(file.name)
         return {
             "id": file.id,
             "name": file.name,
