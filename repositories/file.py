@@ -43,7 +43,7 @@ class FileRepository:
         if user_id:
             query = query.filter_by(user_id=user_id)
         result = await self.db.execute(query)
-        return result.scalars().count()
+        return len(result.scalars().all())
 
     async def delete(self, file: File):
         self.db.delete(file)
