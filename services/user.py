@@ -74,3 +74,13 @@ class UserService:
 
         user.password_hash = get_password_hash(new_password)
         return await self.user_repo.update(user)
+
+    async def delete_user_by_id(self, user_id: str) -> None:
+        user = await self.user_repo.get_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        await self.user_repo.delete(user)
+        return None
