@@ -63,9 +63,9 @@ class FileService:
         }
 
     async def get_files_by_user_id(
-        self, user_id: str, limit: int, offest: int
+        self, user_id: str, limit: int, offset: int
     ) -> list[File]:
-        files = await self.file_repo.get_by_user_id(user_id, limit=limit, offset=offest)
+        files = await self.file_repo.get_by_user_id(user_id, limit=limit, offset=offset)
         result = []
 
         for file in files:
