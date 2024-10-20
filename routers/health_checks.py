@@ -1,4 +1,5 @@
 from fastapi import APIRouter, status
+
 from schemas.health_check import HealthCheckResponse, ReadinessCheckResponse
 
 router = APIRouter(tags=["Health Checks"])
