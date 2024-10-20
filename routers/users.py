@@ -10,8 +10,11 @@ from configs.settings import settings
 from models import file
 from models.user import User
 from schemas.file import PaginatedFileResponseModel
-from schemas.user import (ChangeUserPasswordModel, PaginatedUserResponseModel,
-                          UserResponseModel)
+from schemas.user import (
+    ChangeUserPasswordModel,
+    PaginatedUserResponseModel,
+    UserResponseModel,
+)
 from services.file import FileService
 from services.user import UserService
 
