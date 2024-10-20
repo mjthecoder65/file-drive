@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from configs.settings import settings
-from routers import auth, files, insights, users, health_checks
+from routers import auth, files, health_checks, insights, users
 
 app = FastAPI(
     title=settings.APP_NAME,
