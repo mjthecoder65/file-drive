@@ -35,3 +35,8 @@ class UserRepository:
     async def get_count(self) -> int:
         result = await self.db.execute(select(self.model))
         return len(result.scalars().all())
+
+    async def delete(self, user: User):
+        self.db.delete(user)
+        await self.db.commit()
+        return user
