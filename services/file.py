@@ -110,6 +110,12 @@ class FileService:
     async def get_files_count(self) -> int:
         return await self.file_repo.get_file_count()
 
+    def _delete_from_gcs(self, file_name: str):
+        client = storage.Client()
+        bucket = client.bucket(bucket_name=settings.GCS_BUCKET_NAME)
+        blob = bucket.blob(file_name)
+        blob.delete()
+
     async def delete_file_by_id(self, file_id: str):
         file = await self.file_repo.get_by_id(file_id)
 
@@ -117,11 +123,7 @@ class FileService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
             )
-
-        client = storage.Client()
-        bucket = client.bucket(bucket_name=self.bucket_name)
-        blob = bucket.blob(file.name)
-        blob.delete()
+        self._delete_from_gcs(file.name)
 
         await self.file_repo.delete(file=file)
 
