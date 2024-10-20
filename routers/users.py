@@ -50,7 +50,12 @@ async def get_current_in_user(user: Annotated[User, Depends(get_current_user)]):
     return user
 
 
-@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=UserResponseModel)
+@router.get(
+    "/{id}",
+    dependencies=[Depends(only_admin_user)],
+    status_code=status.HTTP_200_OK,
+    response_model=UserResponseModel,
+)
 async def get_user_by_id(
     id: uuid.UUID, db: Annotated[AsyncSession, Depends(get_session)]
 ):
@@ -74,13 +79,11 @@ async def get_user_files(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     file_service = FileService(db)
-    files = await file_service.get_files_bfy_user_id(
-        user.id, limit=limit, offset=offset
-    )
+    files = await file_service.get_files_by_user_id(user.id, limit=limit, offset=offset)
     count = await file_service.get_files_count_by_user_id(user.id)
 
     return {
-        "files": files,
+        "data": files,
         "total": count,
         "limit": limit,
         "offset": offset,
@@ -118,4 +121,4 @@ async def delete_user_account(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     user_service = UserService(db)
-    await user_service.delete(user.id)
+    await user_service.delete_user_by_id(user.id)
