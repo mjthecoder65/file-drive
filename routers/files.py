@@ -47,18 +47,18 @@ async def get_all_files(
     }
 
 
-@router.get(
-    "/{id}", dependencies=[Depends(only_admin_user)], response_model=FileResponseModel
-)
+@router.get("/{id}", response_model=FileResponseModel)
 async def get_file_by_id(
-    id: uuid.UUID, db: Annotated[AsyncSession, Depends(get_session)]
+    id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_session)],
+    _: Annotated[User, Depends(get_current_user)],
 ):
     file_service = FileService(db)
     return await file_service.get_file_by_id(id)
 
 
 @router.get("/{id}/insights")
-async def get_file_by_id(
+async def get_file_insights(
     id: uuid.UUID,
     _: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_session)],
@@ -75,4 +75,3 @@ async def delete_file(
 ):
     file_service = FileService(db)
     await file_service.delete_file_by_id(file_id=id)
-    return None
