@@ -246,3 +246,56 @@ async def test_delete_file_by_id_not_found(
         headers={"Authorization": f"Bearer {access_token}"},
     )
     assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.integration
+async def test_get_all_files(client: AsyncClient, user_service: UserService):
+    new_user = get_random_user()
+    user = await user_service.register(
+        username=new_user.username,
+        password=new_user.password,
+        email=new_user.email,
+    )
+
+    access_token = create_access_token(
+        id=user.id,
+        is_admin=user.is_admin,
+        expires_datetime=datetime.now(timezone.utc) + timedelta(days=1),
+    )
+
+    faker = Faker()
+    for _ in range(20):
+        file_stream = io.BytesIO(b"Sample file data")
+        file_name = faker.name()
+        file = {"file": (file_name, file_stream, "text/plain")}
+
+        with mock.patch.object(
+            FileService, "_upload_to_gcs", return_value=None
+        ) as _upload_to_gcs, mock.patch.object(
+            FileService,
+            "_generate_signed_url",
+            return_value=faker.url(schemes=["https"]),
+        ) as _generate_signed_url:
+            res = await client.post(
+                f"{settings.API_ENDPOINT_PREFIX}/files",
+                files=file,
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+
+            assert res.status_code == status.HTTP_200_OK
+            assert _upload_to_gcs.called
+            assert _generate_signed_url.called
+
+    new_user = get_random_user()
+    admin_user = await user_service.register(
+        username=new_user.username,
+        password=new_user.password,
+        email=new_user.email,
+        is_admin=True,
+    )
+
+    access_token = create_access_token(
+        id=admin_user.id,
+        is_admin=admin_user.is_admin,
+        expires_datetime=datetime.now(timezone.utc) + timedelta(days=1),
+    )
