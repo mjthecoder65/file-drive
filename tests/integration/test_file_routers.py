@@ -240,6 +240,9 @@ async def test_delete_file_by_id_not_found(
         expires_datetime=datetime.now(timezone.utc) + timedelta(days=1),
     )
 
+    assert access_token is not None
+    assert isinstance(access_token, str)
+
     file_id = uuid.uuid4()
     res = await client.delete(
         f"{settings.API_ENDPOINT_PREFIX}/files/{file_id}",
