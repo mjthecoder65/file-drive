@@ -17,7 +17,7 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--workers", "4", "--bind", "0.0.0.0:8080"]
+CMD ["fastapi", "run", "--workers", "4", "--host", "0.0.0.0", "--port", "8080"]
 
 
 
