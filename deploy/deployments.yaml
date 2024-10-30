@@ -44,14 +44,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: file-drive-api # Name of the service
+  name: file-drive-api
   labels:
-    app: file-drive-api # Label to select the service
+    app: file-drive-api
 spec:
   selector:
-    app: file-drive-app-api # Select all pods with the label app: file-drive-api
+    app: file-drive-app-api
   ports:
     - protocal: TCP
       port: 8080
       targetPort: 8000
-  type: LoadBalancer # Expose the service to the internet
+  type: LoadBalancer
