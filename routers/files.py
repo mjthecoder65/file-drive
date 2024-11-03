@@ -40,7 +40,7 @@ async def get_all_files(
     count = await file_service.get_files_count()
 
     return {
-        "files": files,
+        "data": files,
         "total": count,
         "limit": limit,
         "offset": offset,

@@ -34,8 +34,8 @@ class FileRepository:
         result = await self.db.execute(select(File).filter_by(id=id))
         return result.scalars().first()
 
-    async def get_all(self) -> list[File]:
-        result = await self.db.execute(select(File))
+    async def get_all(self, limit: int, offset: int) -> list[File]:
+        result = await self.db.execute(select(File).offset(offset).limit(limit))
         return result.scalars().all()
 
     async def get_file_count(self, user_id: int | None = None) -> int:
